@@ -1,0 +1,127 @@
+#:import Factory kivy.factory.Factory
+#:import NoTransition kivy.uix.screenmanager.NoTransition
+WindowManager:
+    HomePage:
+    DailyEntryPage:
+    PastEntriesPage:
+
+<HomePage>:
+    name: "home"
+
+    FloatLayout:
+        cols:1
+        Label:
+            text: "Daily"
+            pos_hint: {"y":0.25}
+            font_size: 40
+
+        Button:
+            text: "What is this app?"
+            size_hint: 0.5,0.05
+            pos_hint: {"x":0.5,"top":0.5}
+            on_release: Factory.CustomPopup1().open()
+            
+        Button:
+            text: "Daily Entry"
+            size_hint: 1/3,0.05
+            on_release: 
+                root.manager.transition = NoTransition()
+                app.root.current="daily entry"
+                
+        Button:
+            text: "Past Entries"
+            size_hint: 1/3,0.05
+            pos_hint:{"x":1/3}
+            on_release: 
+                root.manager.transition = NoTransition()
+                app.root.current="past entries"
+
+        Button:
+            text: "Home"
+            size_hint: 1/3,0.05
+            pos_hint:{"x":2/3}
+            on_release: 
+                root.manager.transition = NoTransition()
+                app.root.current="home"
+
+<DailyEntryPage>:
+
+    name:"daily entry"
+
+    FloatLayout:
+        Label:
+            text: "Daily Entry"
+            font_size: 30
+
+        Button:
+            text: "Daily Entry"
+            size_hint: 1/3,0.05
+            on_release: 
+                root.manager.transition = NoTransition()
+                app.root.current="daily entry"
+                
+        Button:
+            text: "Past Entries"
+            size_hint: 1/3,0.05
+            pos_hint:{"x":1/3}
+            on_release: 
+                root.manager.transition = NoTransition()
+                app.root.current="past entries"
+
+        Button:
+            text: "Home"
+            size_hint: 1/3,0.05
+            pos_hint:{"x":2/3}
+            on_release: 
+                root.manager.transition = NoTransition()
+                app.root.current="home"
+
+    
+
+<PastEntriesPage>:
+    name:"past entries"
+
+    FloatLayout:
+        Label:
+            text: "Search a Date"
+            font_size: 30
+
+        Button:
+            text: "Daily Entry"
+            size_hint: 1/3,0.05
+            on_release: 
+                root.manager.transition = NoTransition()
+                app.root.current="daily entry"
+                
+        Button:
+            text: "Past Entries"
+            size_hint: 1/3,0.05
+            pos_hint:{"x":1/3}
+            on_release: 
+                root.manager.transition = NoTransition()
+                app.root.current="past entries"
+
+        Button:
+            text: "Home"
+            size_hint: 1/3,0.05
+            pos_hint:{"x":2/3}
+            on_release: 
+                root.manager.transition = NoTransition()
+                app.root.current="home"
+
+<CustomPopup1@Popup>:
+    title: 'What is this app?'
+    size_hint: (None, None)
+    pos_hint: {"top":1}
+    size: (220, 220)
+    
+    Label:
+        text: 'This app lets you organize\nwhat you need to do each day!'
+        pos_hint: {"x":0.2,"y":0.35}
+        multiline: True
+
+<Popup1>:
+    Label:
+        text:"This app lets you organize what you need to do each day!"
+
+        

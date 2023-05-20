@@ -12,15 +12,24 @@ from kivy.config import Config
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
 
+from kivy.core.window import Window
+Window.size = (400, 700)
+
+'''
 Config.set('graphics', 'resizable', True)
 Config.set('graphics', 'width', '400')
-Config.set('graphics', 'height', '700')
+Config.set('graphics', 'height', '700')'''
+
 
 class HomePage(Screen):
     pass
 
+
 class DailyEntryPage(Screen,Widget):
+    
     # Callback for the checkbox
     def checkbox_click(self, instance, value):
         def hide_label(dt):
@@ -36,7 +45,46 @@ class DailyEntryPage(Screen,Widget):
             
         else:
             self.ids.motivation.text=""
+
+    i=1
+    start_y_label=-0.15
+    start_y_textInput=0.335
+    start_y_checkBox=0.335
+    def addToDo(self):
+        #Number label
+        numberLabel = Label(
+            text=str(self.i) + ".",
+            font_size=12,
+            pos_hint={"x":-0.4,"y":self.start_y_label}
+        )
+        self.i+=1
+        self.start_y_label-=0.05
+        self.ids.dailyEntry.add_widget(numberLabel)
         
+        #Text input
+        textInput = TextInput(
+            multiline=False,
+            size_hint_x=0.5,
+            size_hint_y=0.03,
+            pos_hint= {"x":0.15,"y":self.start_y_textInput},
+            font_size= 10,
+        )
+        self.start_y_textInput-=0.05
+        self.ids.dailyEntry.add_widget(textInput)
+
+        #Checkbox
+        checkBox=CheckBox(
+            active=False,
+            pos_hint= {"x":0.9,"y":self.start_y_checkBox},
+            size_hint_x=None,
+            size_hint_y=None,
+            size= (20,20),
+            color=(0,255,255,0.5),
+            #on_active= self.checkbox_click(self,active) #PROBLEM calling this function
+        )
+       
+        self.start_y_checkBox-=0.05
+        self.ids.dailyEntry.add_widget(checkBox)
     
 
 

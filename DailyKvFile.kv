@@ -51,6 +51,7 @@ WindowManager:
     name:"daily entry"
 
     FloatLayout:
+        id: dailyEntry
         Label:
             text: "Daily Entry"
             font_size: 30
@@ -84,6 +85,17 @@ WindowManager:
             id: motivation
             text:""
             pos_hint: {"y":-0.4}
+
+        Label:
+            text: "Daily To-Do List:"
+            font_size: 15
+            pos_hint: {"x":-0.3,"y":-0.1}
+
+        Button:
+            text:"Add"
+            pos_hint: {"x":0.05,"y":0.1}
+            size_hint: 0.2,0.05
+            on_release: root.addToDo()
 
 
 

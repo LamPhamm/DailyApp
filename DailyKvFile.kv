@@ -122,6 +122,24 @@ WindowManager:
                 root.manager.transition = NoTransition()
                 app.root.current="home"
 
+      
+        ScrollView:        
+            do_scroll_x: False
+            do_scroll_y: True
+            bar_width:5
+            pos_hint: {"y":0.165,"x":0.1}
+            size_hint: 0.8,0.2
+            
+            FloatLayout:
+                id:scroller
+                size_hint_y:None
+            
+                
+                Label:
+                    height: 1000
+                    text:""
+
+
     
 
 <PastEntriesPage>:

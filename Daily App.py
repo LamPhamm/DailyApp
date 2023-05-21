@@ -14,6 +14,10 @@ from kivy.uix.widget import Widget
 from kivy.clock import Clock
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
+from kivy.uix.scrollview import ScrollView
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
+
 
 from kivy.core.window import Window
 Window.size = (400, 700)
@@ -47,30 +51,34 @@ class DailyEntryPage(Screen,Widget):
             self.ids.motivation.text=""
 
     i=1
-    start_y_label=-0.15
-    start_y_textInput=0.335
-    start_y_checkBox=0.335
+    start_y_label=0.4
+    start_y_textInput=0.8
+    start_y_checkBox=0.8
     def addToDo(self):
+        
         #Number label
         numberLabel = Label(
             text=str(self.i) + ".",
             font_size=12,
-            pos_hint={"x":-0.4,"y":self.start_y_label}
+            pos_hint={"x":-0.4,"y":self.start_y_label},
+            
         )
+      
         self.i+=1
-        self.start_y_label-=0.05
-        self.ids.dailyEntry.add_widget(numberLabel)
+        self.start_y_label-=0.4
+        self.ids.scroller.add_widget(numberLabel)
+        
         
         #Text input
         textInput = TextInput(
             multiline=False,
-            size_hint_x=0.5,
-            size_hint_y=0.03,
+            size_hint_x=0.6,
+            size_hint_y=0.2,
             pos_hint= {"x":0.15,"y":self.start_y_textInput},
             font_size= 10,
         )
-        self.start_y_textInput-=0.05
-        self.ids.dailyEntry.add_widget(textInput)
+        self.start_y_textInput-=0.4
+        self.ids.scroller.add_widget(textInput)
 
         #Checkbox
         checkBox=CheckBox(
@@ -83,9 +91,9 @@ class DailyEntryPage(Screen,Widget):
             #on_active= self.checkbox_click(self,active) #PROBLEM calling this function
         )
        
-        self.start_y_checkBox-=0.05
-        self.ids.dailyEntry.add_widget(checkBox)
-    
+        self.start_y_checkBox-=0.4
+        self.ids.scroller.add_widget(checkBox)
+        
 
 
 class PastEntriesPage(Screen):

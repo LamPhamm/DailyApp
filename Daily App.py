@@ -5,7 +5,7 @@ import time
 
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from kivy.uix.popup import Popup
 from kivy.uix.floatlayout import FloatLayout
 from kivy.config import Config
@@ -22,19 +22,20 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.core.window import Window
 Window.size = (400, 700)
 
-'''
-Config.set('graphics', 'resizable', True)
-Config.set('graphics', 'width', '400')
-Config.set('graphics', 'height', '700')'''
-
 
 class HomePage(Screen):
     pass
 
-
+#Global Variables
+i=0
+start_y_label=0.4
+start_y_textInput=0.8
+start_y_checkBox=0.8
+myNumberLabels=[]
+myTextInputs=[]
+myCheckBoxes=[]
 class DailyEntryPage(Screen,Widget):
-    
-    # Callback for the checkbox
+
     def checkbox_click(self, instance, value):
         def hide_label(dt):
             self.ids.motivation.text=""
@@ -49,41 +50,41 @@ class DailyEntryPage(Screen,Widget):
             
         else:
             self.ids.motivation.text=""
-
-    i=1
-    start_y_label=0.4
-    start_y_textInput=0.8
-    start_y_checkBox=0.8
+    
+    
+  
     def addToDo(self):
-        
-        #Number label
-        numberLabel = Label(
-            text=str(self.i) + ".",
-            font_size=12,
-            pos_hint={"x":-0.4,"y":self.start_y_label},
-            
-        )
+        global i, start_y_label, start_y_textInput, start_y_checkBox
+        i+=1
       
-        self.i+=1
-        self.start_y_label-=0.4
-        self.ids.scroller.add_widget(numberLabel)
-        
+        #Number label
+        self.numberLabel = Label(
+            text=str(i) + ".",
+            font_size=12,
+            pos_hint={"x":-0.4,"y":start_y_label},
+            height= 1000,
+        )
+       
+        start_y_label-=0.4
+        self.ids.scroller.add_widget(self.numberLabel)
+        myNumberLabels.append(self.numberLabel)
         
         #Text input
-        textInput = TextInput(
+        self.textInput = TextInput(
             multiline=False,
             size_hint_x=0.6,
             size_hint_y=0.2,
-            pos_hint= {"x":0.15,"y":self.start_y_textInput},
+            pos_hint= {"x":0.15,"y":start_y_textInput},
             font_size= 10,
         )
-        self.start_y_textInput-=0.4
-        self.ids.scroller.add_widget(textInput)
+        start_y_textInput-=0.4
+        self.ids.scroller.add_widget(self.textInput)
+        myTextInputs.append(self.textInput)
 
         #Checkbox
-        checkBox=CheckBox(
+        self.checkBox=CheckBox(
             active=False,
-            pos_hint= {"x":0.9,"y":self.start_y_checkBox},
+            pos_hint= {"x":0.9,"y":start_y_checkBox},
             size_hint_x=None,
             size_hint_y=None,
             size= (20,20),
@@ -91,21 +92,47 @@ class DailyEntryPage(Screen,Widget):
             #on_active= self.checkbox_click(self,active) #PROBLEM calling this function
         )
        
-        self.start_y_checkBox-=0.4
-        self.ids.scroller.add_widget(checkBox)
+        start_y_checkBox-=0.4
+        self.ids.scroller.add_widget(self.checkBox)
+        myCheckBoxes.append(self.checkBox)
+    
+    def displayRemovePopup(self):
+        show=DailyEntryPage().RemovePopup()
+        popupWindow = Popup(title="Enter a number from 1 to "+str(i), content=show, size_hint=(None,None),size=(220,220),pos_hint={"top":1})
+        popupWindow.open()
+
+    class RemovePopup(FloatLayout):
         
+        def shiftTasks(self):
+            global i, start_y_label, start_y_textInput, start_y_checkBox
+            numberInput=self.ids.userInput.text
+            
+            if numberInput==str(i):
+                myNumberLabels[len(myNumberLabels)-1].size_hint=(0,0)
+                myTextInputs[len(myTextInputs)-1].size_hint=(0,0)
+                myTextInputs[len(myTextInputs)-1].background_color=(0,0,0,1)
+                myCheckBoxes[len(myCheckBoxes)-1].size=(0,0)
+                myCheckBoxes[len(myCheckBoxes)-1].color=(0,0,0,1)
+               
+                myNumberLabels.pop(len(myNumberLabels)-1)
+                myTextInputs.pop(len(myTextInputs)-1)
+                myCheckBoxes.pop(len(myCheckBoxes)-1)
 
+                i-=1
+                start_y_label+=0.4
+                start_y_textInput+=0.4
+                start_y_checkBox+=0.4
 
+                
 class PastEntriesPage(Screen):
     pass
 
-class WindowManager(ScreenManager):
+class WindowManager3(ScreenManager):
+    transition= NoTransition()
     pass
 
-
-
-
-
+class Navigation(Screen,FloatLayout):
+    pass
 
 kv = Builder.load_file("DailyKvFile.kv")
 class myApp(App):

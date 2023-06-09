@@ -3,6 +3,10 @@ import datetime
 import random
 import time
 
+from bs4 import BeautifulSoup
+import requests
+import re
+
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
@@ -17,6 +21,7 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.image import Image, AsyncImage
 
 
 from kivy.core.window import Window
@@ -34,6 +39,7 @@ start_y_checkBox=0.8
 myNumberLabels=[]
 myTextInputs=[]
 myCheckBoxes=[]
+
 class DailyEntryPage(Screen,Widget):
 
     def checkbox_click(self, instance, value):
@@ -47,9 +53,47 @@ class DailyEntryPage(Screen,Widget):
         if value:
             self.ids.motivation.text=words[ran_num]
             Clock.schedule_once(hide_label, 2)
+
+            userInput=self.ids.DailyHighlightEntry.text
+            userInputList=userInput.split()
             
-        else:
-            self.ids.motivation.text=""
+
+            try:
+                userInputString='+'.join(userInputList)
+                url="https://www.everypixel.com/search?q=" + userInputString
+                #print(url)
+                page=requests.get(url).text
+                doc=BeautifulSoup(page,"html.parser")
+              
+
+                all_images=doc.find('div',{'class':'content clearfix'})
+                image_tags=all_images.find_all('div',{'class':'thumb'})
+
+            except:
+                userInputString2='-'.join(userInputList)
+                url="https://www.everypixel.com/q/" + userInputString2
+                #print(url)
+                page=requests.get(url).text
+                doc=BeautifulSoup(page,"html.parser")
+                
+           
+                all_images=doc.find('div',{'class':'content clearfix'})
+                image_tags=all_images.find_all('div',{'class':'thumb'})
+            
+            myImages=[]
+            for image in image_tags:
+                image_tag=image.find('img')
+                image_url=image_tag.get('src')
+                myImages.append(image_url)
+
+        
+            ran_num=random.randrange(len(myImages))
+           
+            self.displayImage = AsyncImage(source=myImages[ran_num])
+            self.displayImage.size_hint=0.8,0.2
+            self.displayImage.pos_hint= {"top":0.65,'x':0.125}
+            self.ids.dailyEntry.add_widget(self.displayImage)
+        
     
     
   
@@ -108,15 +152,45 @@ class DailyEntryPage(Screen,Widget):
             numberInput=self.ids.userInput.text
             
             if numberInput==str(i):
+                #Remove element from screen by making size=0 and changing background color
                 myNumberLabels[len(myNumberLabels)-1].size_hint=(0,0)
                 myTextInputs[len(myTextInputs)-1].size_hint=(0,0)
                 myTextInputs[len(myTextInputs)-1].background_color=(0,0,0,1)
                 myCheckBoxes[len(myCheckBoxes)-1].size=(0,0)
                 myCheckBoxes[len(myCheckBoxes)-1].color=(0,0,0,1)
                
+                #Remove element in corresponding lists
                 myNumberLabels.pop(len(myNumberLabels)-1)
                 myTextInputs.pop(len(myTextInputs)-1)
                 myCheckBoxes.pop(len(myCheckBoxes)-1)
+
+                #Reverse the global variables
+                i-=1
+                start_y_label+=0.4
+                start_y_textInput+=0.4
+                start_y_checkBox+=0.4
+            else:
+                myNumberLabels[int(numberInput)-1].size_hint=(0,0)
+                myTextInputs[int(numberInput)-1].size_hint=(0,0)
+                myTextInputs[int(numberInput)-1].background_color=(0,0,0,1)
+                myCheckBoxes[int(numberInput)-1].size=(0,0)
+                myCheckBoxes[int(numberInput)-1].color=(0,0,0,1)
+
+                #Shift elements to correct position
+                
+                for j in range(int(numberInput),len(myNumberLabels)):
+                    print(myNumberLabels[j].text)
+                    myNumberLabels[j].text=str(int(myNumberLabels[j].text[0])-1)
+                    
+                    factor=(len(myNumberLabels) - j + 1) * 0.4
+                    myNumberLabels[j].pos_hint={"x":-0.4,"y":start_y_label + factor}
+                    myTextInputs[j].pos_hint={"x":0.15,"y":start_y_textInput + factor}
+                    myCheckBoxes[j].pos_hint={"x":0.9,"y":start_y_checkBox + factor}
+                
+                #Remove element in corresponding lists
+                myNumberLabels.pop(int(numberInput)-1)
+                myTextInputs.pop(int(numberInput)-1)
+                myCheckBoxes.pop(int(numberInput)-1)
 
                 i-=1
                 start_y_label+=0.4
@@ -128,8 +202,8 @@ class PastEntriesPage(Screen):
     pass
 
 class WindowManager3(ScreenManager):
-    transition= NoTransition()
     pass
+   
 
 class Navigation(Screen,FloatLayout):
     pass

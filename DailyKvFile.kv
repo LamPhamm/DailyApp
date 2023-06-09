@@ -1,6 +1,7 @@
 #:import Factory kivy.factory.Factory
 #:import NoTransition kivy.uix.screenmanager.NoTransition
 #:import datetime datetime
+
 WindowManager3:
     HomePage:
     DailyEntryPage:
@@ -72,6 +73,7 @@ WindowManager3:
             pos_hint: {"x":-0.3,"y":0.2}
 
         TextInput:
+            id: DailyHighlightEntry
             multiline:False
             size_hint:0.5,0.03
             pos_hint: {"x":0.35,"y":0.685}
@@ -123,7 +125,10 @@ WindowManager3:
                     height: self.texture_size[1]
                     text_size: self.width, None
                     padding: 10, 10
-                    
+        
+
+        
+
         Navigation:
 
 <RemovePopup>:

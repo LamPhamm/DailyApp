@@ -2,6 +2,15 @@ import kivy
 import datetime
 import random
 import time
+import mysql.connector
+
+db=mysql.connector.connect(
+host="localhost",
+user="Lam",
+passwd="waterBell$73",
+database="dailyAppData"
+)
+myCursor=db.cursor()
 
 from bs4 import BeautifulSoup
 import requests
@@ -39,9 +48,20 @@ start_y_checkBox=0.8
 myNumberLabels=[]
 myTextInputs=[]
 myCheckBoxes=[]
+currDate="hi"
 
 class DailyEntryPage(Screen,Widget):
-
+    def updateTableHighlightText(self,highlightText):
+        qHighlightText='UPDATE DailyEntry SET Highlight=%s WHERE Date=%s'
+        values=(highlightText,currDate)
+        myCursor.execute(qHighlightText,values)
+        db.commit()
+        
+        myCursor.execute('SELECT * FROM DailyEntry')
+        for x in myCursor:
+            print(x)
+       
+    
     def checkbox_click(self, instance, value):
         def hide_label(dt):
             self.ids.motivation.text=""
@@ -93,10 +113,31 @@ class DailyEntryPage(Screen,Widget):
             self.displayImage.size_hint=0.8,0.2
             self.displayImage.pos_hint= {"top":0.65,'x':0.125}
             self.ids.dailyEntry.add_widget(self.displayImage)
-        
+
+            qCheckbox='UPDATE DailyEntry SET statusHighlight=%s WHERE Date=%s'
+            valuesCheckbox=(True,currDate)
+
+        else:
+            self.displayImage.size_hint=0,0
+            url=None
+            qCheckbox='UPDATE DailyEntry SET statusHighlight=%s WHERE Date=%s'
+            valuesCheckbox=(False,currDate)
+
+        #Update image sql column
+        qImage='UPDATE DailyEntry SET highlightImageLink=%s WHERE Date=%s'
+        valuesImage=(url,currDate)
+        myCursor.execute(qImage,valuesImage)
+        db.commit()
+
+        #Update status sql column
+        myCursor.execute(qCheckbox,valuesCheckbox)
+        db.commit()
+
+        myCursor.execute('SELECT * FROM DailyEntry')
+        for x in myCursor:
+            print(x)
     
     
-  
     def addToDo(self):
         global i, start_y_label, start_y_textInput, start_y_checkBox
         i+=1
@@ -207,8 +248,24 @@ class WindowManager3(ScreenManager):
 
 class Navigation(Screen,FloatLayout):
     pass
+        
 
 kv = Builder.load_file("DailyKvFile.kv")
+currDate=str(datetime.datetime.now())[:10]
+
+
+
+qDate='INSERT INTO DailyEntry(Date) SELECT %s WHERE NOT EXISTS (SELECT * FROM DailyEntry WHERE Date=%s)'
+values=(currDate,currDate)
+myCursor.execute(qDate,values) 
+db.commit()
+
+#myCursor.execute('DELETE FROM DailyEntry')
+#db.commit()
+myCursor.execute('SELECT * FROM DailyEntry')
+for x in myCursor:
+    print(x)
+
 class myApp(App):
     def build(self):
         return kv
